@@ -15,9 +15,7 @@ class MailerTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         // InlineStyle
-        $inliner = $this->getMockBuilder('\InlineStyle\InlineStyle')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $inliner = new \InlineStyle\InlineStyle();
 
         // Swift
         $swift = $this->getMockBuilder('\Swift_Mailer')
