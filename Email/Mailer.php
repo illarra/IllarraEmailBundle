@@ -11,29 +11,16 @@ class Mailer
         $this->mailer = $mailer;
     }
 
-    public function htmlToPlain($html)
-    {
-        return $html;
-    }
-
     /**
      *
      */
-    public function send($profile, Layout $layout, array $data = array())
+    public function send($profile, \Swift_Message $message)
     {
-        $html  = $layout->render();
-        $plain = $this->htmlToPlain($html);
-
-        // Send From Profile
-        $message = \Swift_Message::newInstance()
-            ->setCharset('utf-8')
-            ->setSubject('Subject')
-            ->setFrom(['test@example.com' => 'Test'])
-            ->setTo($data['to'])
-            ->setBody($plain, 'text/plain')
-            ->addPart($html, 'text/html');
-
-        // TODO: check for attachments
+        // Load $profile
+        
+        
+        // From $profile
+        $message->setFrom(['test@example.com' => 'Test']);
 
         return $this->mailer->send($message);
     }
