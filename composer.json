@@ -2,7 +2,7 @@
   "name":        "illarra/email-bundle",
   "description": "Create beautiful emails in Symfony2",
   "keywords":    ["email", "template", "bundle"],
-  "homepage":    "https://bitbucket.org/illarra/illarraemailbundle",
+  "homepage":    "https://github.com/illarra/IllarraEmailBundle",
   "type":        "symfony-bundle",
   "license":     "MIT",
   "authors": [
