@@ -1,0 +1,30 @@
+{
+  "name":        "illarra/email-bundle",
+  "description": "Create beautiful emails in Symfony2",
+  "keywords":    ["email", "template", "bundle"],
+  "homepage":    "https://bitbucket.org/illarra/illarraemailbundle",
+  "type":        "symfony-bundle",
+  "license":     "MIT",
+  "authors": [
+    {
+      "name":  "Asier Illarramendi",
+      "email": "asier@illarra.com"
+    },
+    {
+      "name":  "Eneko Illarramendi",
+      "email": "eneko@illarra.com"
+    }
+  ],
+  "require": {
+    "php":                     ">=5.4",
+    "inlinestyle/inlinestyle": "dev-master"
+  },
+  "require-dev": {
+    "symfony/framework-bundle": ">=2.3,<2.4-dev"
+  },
+  "autoload": {
+    "psr-0": { "Illarra\\EmailBundle": "" }
+  },
+  "target-dir": "Illarra/EmailBundle",
+  "minimum-stability": "dev"
+}
