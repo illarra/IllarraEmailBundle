@@ -6,32 +6,83 @@ use Illarra\EmailBundle\Email;
 
 class MailerTest extends \PHPUnit_Framework_TestCase
 {
-    public function testSend()
+    protected $swift;
+
+    public function getMailer(array $profiles = array())
     {
         // Swift
-        $swift = $this->getMockBuilder('\Swift_Mailer')
+        $this->swift = $this->getMockBuilder('\Swift_Mailer')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $swift
+        return new Email\Mailer($this->swift, $profiles);
+    }
+
+    /**
+     * @expectedException \Illarra\EmailBundle\Email\Error\ProfileNotFoundException
+     */
+    public function testSendProfileNotFoundException()
+    {
+        $mailer = $this->getMailer();
+        $mailer->send('unknown', \Swift_Message::newInstance());
+    }
+
+    public function testSend()
+    {
+        $profiles = array(
+            'doup' => array(
+                'from' => array(
+                    'doup@example.com'  => 'Asier',
+                ),
+            ),
+        );
+
+        $mailer = $this->getMailer($profiles);
+
+        $this->swift
             ->expects($this->any())
             ->method('send')
             ->with($this->isInstanceOf('\Swift_Mime_Message'))
             ->will($this->returnValue(1));
 
-        $mailer = new Email\Mailer($swift);
-
-        $msg = \Swift_Message::newInstance();
-
-        // Send the message from "maritxu" profile
-        // The mailer will read the profile and set "from" field
-        $count = $mailer->send('maritxu', $msg);
-
+        $msg   = \Swift_Message::newInstance();
+        $count = $mailer->send('doup', $msg);
         $this->assertEquals(1, $count, 'One email sent.');
+
+        $this->assertEquals(null, $msg->getSender());
+        $this->assertEquals($profiles['doup']['from'], $msg->getFrom());
+        $this->assertEquals(null, $msg->getReplyTo());
     }
 
-    public function testSendWithAttachment() 
+    public function testSendFullTest()
     {
-        //$this->assertTrue(false, 'Sends and email with attachment.');
+        $profiles = array(
+            'doup' => array(
+                'from' => array(
+                    'doup@example.com'  => 'Asier',
+                    'eneko@example.com' => 'Eneko',
+                ),
+                'reply_to' => array(
+                    'joxepo@example.com'  => 'Joxepo',
+                    'maritxu@example.com' => 'Maritxu',
+                ),
+            ),
+        );
+
+        $mailer = $this->getMailer($profiles);
+
+        $this->swift
+            ->expects($this->any())
+            ->method('send')
+            ->with($this->isInstanceOf('\Swift_Mime_Message'))
+            ->will($this->returnValue(1));
+
+        $msg   = \Swift_Message::newInstance();
+        $count = $mailer->send('doup', $msg);
+        $this->assertEquals(1, $count, 'One email sent.');
+
+        $this->assertEquals(array('doup@example.com' => 'Asier'), $msg->getSender());
+        $this->assertEquals($profiles['doup']['from'], $msg->getFrom());
+        $this->assertEquals($profiles['doup']['reply_to'], $msg->getReplyTo());
     }
 }
