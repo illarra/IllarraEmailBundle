@@ -43,7 +43,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
      */
     public function testRenderLayoutNotFound()
     {
-        $this->renderer->render('email.css', 'nonlayout.twig', 'template.twig');
+        $this->renderer->render('nonlayout.twig', 'template.twig', 'email.css');
     }
 
     /**
@@ -51,7 +51,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
      */
     public function testRenderTemplateNotFound()
     {
-        $this->renderer->render('email.css', 'layout.twig', 'nontemplate.twig');
+        $this->renderer->render('layout.twig', 'nontemplate.twig', 'email.css');
     }
 
     /**
@@ -59,7 +59,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
      */
     public function testRenderTemplateDoesNotExtend()
     {
-        $this->renderer->render('email.css', 'layout.twig', 'noextends.twig');
+        $this->renderer->render('layout.twig', 'noextends.twig', 'email.css');
     }
 
     public function testRender()
@@ -70,7 +70,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
             ->with($this->identicalTo('email.css'))
             ->will($this->returnValue('./Tests/fixtures/email.css'));
 
-        $data = $this->renderer->render('email.css', 'layout.twig', 'template.twig');
+        $data = $this->renderer->render('layout.twig', 'template.twig', 'email.css');
 
         $this->assertEquals('This is da subject', $data['subject'], 'Subject should not have new lines and untrimed space');
     }

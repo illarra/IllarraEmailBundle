@@ -79,7 +79,7 @@ class Renderer
     /**
      *
      */
-    public function render($css, $layout, $template, array $data = array())
+    public function render($layout, $template, $css, array $data = array())
     {
         $loader    = $this->twig->getLoader();
         $hasExists = $loader instanceof \Twig_ExistsLoaderInterface;
@@ -169,9 +169,9 @@ class Renderer
     /**
      *
      */
-    public function updateMessage(\Swift_Message $message, $css, $layout, $template, array $data = array())
+    public function updateMessage(\Swift_Message $message, $layout, $template, $css, array $data = array())
     {
-        $render = $this->render($css, $layout, $template, $data);
+        $render = $this->render($layout, $template, $css, $data);
 
         $message
             ->setCharset('utf-8')
