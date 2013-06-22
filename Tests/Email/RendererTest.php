@@ -19,6 +19,20 @@ class RendererTest extends \PHPUnit_Framework_TestCase
         $this->renderer = new Email\Renderer($twig, $twigStrLoader, $inliner);
     }
 
+    public function testSetterGetters()
+    {
+        // Default values
+        $this->assertEquals('layout', $this->renderer->getLayoutVar());
+        $this->assertEquals('subject', $this->renderer->getSubjectVar());
+
+        // Change default values
+        $this->renderer->setLayoutVar('da_layout');
+        $this->renderer->setSubjectVar('da_subject');
+
+        $this->assertEquals('da_layout', $this->renderer->getLayoutVar());
+        $this->assertEquals('da_subject', $this->renderer->getSubjectVar());
+    }
+
     /**
      * @expectedException \Illarra\EmailBundle\Email\Error\LayoutNotFoundException
      */

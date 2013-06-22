@@ -2,32 +2,36 @@
 
 namespace Illarra\EmailBundle\Email;
 
+/**
+ *
+ */
 class Renderer
 {
     protected $inliner;
+    protected $layout;
+    protected $subject;
     protected $twig;
     protected $twigStrLoader;
 
+    /**
+     *
+     */
     public function __construct(\Twig_Environment $twig, \Twig_Loader_String $twigStrLoader, \InlineStyle\InlineStyle $inliner)
     {
         $this->inliner       = $inliner;
         $this->twig          = $twig;
         $this->twigStrLoader = $twigStrLoader;
-        $this->subject       = "subject";
-        $this->layout        = "layout";
+
+        $this->layout  = "layout";
+        $this->subject = "subject";
     }
 
-    public function updateMessage(\Swift_Message $message, $layout, $template, array $data = array())
+    /**
+     *
+     */
+    public function getLayoutVar()
     {
-        $render = $this->render($layout, $template, $data);
-
-        $message
-            ->setCharset('utf-8')
-            ->setSubject($render[$this->subject])
-            ->setBody($render['body_plain'], 'text/plain')
-            ->addPart($render['body_html'], 'text/html');
-
-        return $message;
+        return $this->layout;
     }
 
     /**
@@ -52,6 +56,25 @@ class Renderer
         return $layout;
     }
 
+    /**
+     *
+     */
+    public function getSubjectVar()
+    {
+        return $this->subject;
+    }
+
+    /**
+     *
+     */
+    public function htmlToPlain($html)
+    {
+        return $html;
+    }
+
+    /**
+     *
+     */
     public function render($layout, $template, array $data = array())
     {
         $loader    = $this->twig->getLoader();
@@ -120,8 +143,39 @@ class Renderer
         ];
     }
 
-    public function htmlToPlain($html)
+    /**
+     *
+     */
+    public function setLayoutVar($layout)
     {
-        return $html;
+        $this->layout = $layout;
+
+        return $this;
+    }
+
+    /**
+     *
+     */
+    public function setSubjectVar($subject)
+    {
+        $this->subject = $subject;
+
+        return $this;
+    }
+
+    /**
+     *
+     */
+    public function updateMessage(\Swift_Message $message, $layout, $template, array $data = array())
+    {
+        $render = $this->render($layout, $template, $data);
+
+        $message
+            ->setCharset('utf-8')
+            ->setSubject($render[$this->subject])
+            ->setBody($render['body_plain'], 'text/plain')
+            ->addPart($render['body_html'], 'text/html');
+
+        return $message;
     }
 }
