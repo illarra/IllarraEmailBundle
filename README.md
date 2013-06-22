@@ -56,8 +56,8 @@ In `config.yml`:
 illarra_email:
   profiles:
     maritxu:
-      from: ['maritxu@example.com' => 'Maritxu']
+      from: { maritxu@example.com: Maritxu }
     bartolo:
-      from: ['no-reply@example.com' => 'Unknown']
-      reply_to: ['bartolo@example.com' => 'Bartolo']
+      from: { no-reply@example.com: Unknown }
+      reply_to: { bartolo@example.com: Bartolo }
 ```
