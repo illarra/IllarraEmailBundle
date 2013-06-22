@@ -1,5 +1,20 @@
+parameters:
+    illarra.email_bundle.mailer.class: Illarra\EmailBundle\Email\Mailer
+    illarra.email_bundle.renderer.class: Illarra\EmailBundle\Email\Renderer
+    illarra.email_bundle.renderer.inline_style.class: InlineStyle\InlineStyle
+    illarra.email_bundle.renderer.twig_loader_string.class: Twig_Loader_String
+
 services:
-    #illarra.email.twig.loader.string:
-    #    class: Twig_Loader_String
-    #    tags:
-    #        - { name: twig.loader }
+    illarra.email.mailer:
+        class: "%illarra.email_bundle.mailer.class%"
+        arguments: ["@mailer"]
+
+    illarra.email.renderer:
+        class: "%illarra.email_bundle.renderer.class%"
+        arguments: ["@twig"]
+
+    illarra.email.renderer.inline_style:
+        class: "%illarra.email_bundle.renderer.inline_style.class%"
+
+    illarra.email.renderer.twig_loader_string:
+        class: "%illarra.email_bundle.renderer.twig_loader_string.class%"
