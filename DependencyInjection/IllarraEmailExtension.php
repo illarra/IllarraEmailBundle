@@ -22,6 +22,10 @@ class IllarraEmailExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        $container->setParameter('illarra.email_bundle.mailer.profiles', $config['profiles']);
+        $container->setParameter('illarra.email_bundle.renderer.layout_var', $config['layout_var']);
+        $container->setParameter('illarra.email_bundle.renderer.subject_var', $config['subject_var']);
+
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }

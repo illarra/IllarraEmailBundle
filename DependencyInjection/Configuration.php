@@ -20,10 +20,58 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('illarra_email');
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        $rootNode
+            ->children()
+                ->scalarNode('layout_var')
+                    ->defaultValue('layout')
+                    ->info('Name of the variable used in the twig extends tag')
+                ->end()
+                ->scalarNode('subject_var')
+                    ->defaultValue('subject')
+                    ->info('Name of the twig block used to extract the email subject')
+                ->end()
+                ->arrayNode('profiles')
+                    ->info('Profiles to be used with Mailer service')
+                    ->defaultValue([])
+                    ->prototype('array')
+                    ->children()
+                        ->arrayNode('from')
+                            ->isRequired()
+                            ->info('Associative array of From emails, key must be email and value the name')
+                            ->requiresAtLeastOneElement()
+                            ->useAttributeAsKey('name')
+                            ->validate()
+                                ->ifTrue($this->validateEmail())
+                                    ->thenInvalid("Array key must be an email")
+                                ->end()
+                            ->prototype('scalar')->end()
+                        ->end()
+                        ->arrayNode('reply_to')
+                            ->info('Associative array of Reply-To emails, key must be email and value the name')
+                            ->useAttributeAsKey('name')
+                            ->validate()
+                                ->ifTrue($this->validateEmail())
+                                    ->thenInvalid("Array key must be an email")
+                                ->end()
+                            ->prototype('scalar')->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
 
         return $treeBuilder;
+    }
+
+    public function validateEmail()
+    {
+        return function ($v) {
+            foreach (array_keys($v) as $email) {
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
     }
 }

@@ -7,11 +7,14 @@ parameters:
 services:
     illarra.email.mailer:
         class: "%illarra.email_bundle.mailer.class%"
-        arguments: ["@mailer"]
+        arguments: ["@mailer", "%illarra.email_bundle.mailer.profiles%"]
 
     illarra.email.renderer:
         class: "%illarra.email_bundle.renderer.class%"
         arguments: ["@twig", "@illarra.email.renderer.twig_loader_string", "@illarra.email.renderer.inline_style"]
+        calls:
+            - ["setLayoutVar", ["%illarra.email_bundle.renderer.layout_var%"]]
+            - ["setSubjectVar", ["%illarra.email_bundle.renderer.subject_var%"]]
 
     illarra.email.renderer.inline_style:
         class: "%illarra.email_bundle.renderer.inline_style.class%"
