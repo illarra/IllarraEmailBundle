@@ -13,6 +13,7 @@ $message = new \Swift_Message::newInstance();
 
 $this->get('illarra.email.renderer')->updateMessage(
     $message,
+    '@AcmeEmailBundle/Resources/email.css',
     'AcmeEmailBundle:Email:layout.html.twig',
     'AcmeEmailBundle:Email:signup/eu.html.twig',
     [
@@ -29,7 +30,7 @@ Renderer
 --------
 
 ```php
-$renderer->updateMessage($swift_message, $layout, $template, $data);
+$renderer->updateMessage($swift_message, $css, $layout, $template, $data);
 ```
 
 This is the minimum a template needs:

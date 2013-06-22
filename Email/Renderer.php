@@ -2,12 +2,15 @@
 
 namespace Illarra\EmailBundle\Email;
 
+use Symfony\Component\HttpKernel\Kernel;
+
 /**
  *
  */
 class Renderer
 {
     protected $inliner;
+    protected $kernel;
     protected $layout;
     protected $subject;
     protected $twig;
@@ -16,9 +19,10 @@ class Renderer
     /**
      *
      */
-    public function __construct(\Twig_Environment $twig, \Twig_Loader_String $twigStrLoader, \InlineStyle\InlineStyle $inliner)
+    public function __construct(Kernel $kernel, \Twig_Environment $twig, \Twig_Loader_String $twigStrLoader, \InlineStyle\InlineStyle $inliner)
     {
         $this->inliner       = $inliner;
+        $this->kernel        = $kernel;
         $this->twig          = $twig;
         $this->twigStrLoader = $twigStrLoader;
 
@@ -75,7 +79,7 @@ class Renderer
     /**
      *
      */
-    public function render($layout, $template, array $data = array())
+    public function render($css, $layout, $template, array $data = array())
     {
         $loader    = $this->twig->getLoader();
         $hasExists = $loader instanceof \Twig_ExistsLoaderInterface;
@@ -127,8 +131,7 @@ class Renderer
         // -----------------
         // ADD INLINE STYLES
         // -----------------
-        //$css = file_get_contents($this->container->getParameter('kernel.root_dir') . '/../src/App/CoreBundle/Resources/assets/css/email.css');
-        $css = "html { background-color: red; }";
+        $css = file_get_contents($this->kernel->locateResource($css));
 
         $this->inliner->loadHTML($body);
         @$this->inliner->applyStylesheet($css);
@@ -166,9 +169,9 @@ class Renderer
     /**
      *
      */
-    public function updateMessage(\Swift_Message $message, $layout, $template, array $data = array())
+    public function updateMessage(\Swift_Message $message, $css, $layout, $template, array $data = array())
     {
-        $render = $this->render($layout, $template, $data);
+        $render = $this->render($css, $layout, $template, $data);
 
         $message
             ->setCharset('utf-8')

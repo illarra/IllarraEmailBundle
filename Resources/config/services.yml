@@ -11,7 +11,7 @@ services:
 
     illarra.email.renderer:
         class: "%illarra.email_bundle.renderer.class%"
-        arguments: ["@twig", "@illarra.email.renderer.twig_loader_string", "@illarra.email.renderer.inline_style"]
+        arguments: ["@kernel", "@twig", "@illarra.email.renderer.twig_loader_string", "@illarra.email.renderer.inline_style"]
         calls:
             - ["setLayoutVar", ["%illarra.email_bundle.renderer.layout_var%"]]
             - ["setSubjectVar", ["%illarra.email_bundle.renderer.subject_var%"]]

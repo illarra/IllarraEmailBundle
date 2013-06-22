@@ -6,17 +6,22 @@ use Illarra\EmailBundle\Email;
 
 class RendererTest extends \PHPUnit_Framework_TestCase
 {
+    protected $kernel;
     protected $renderer;
 
     protected function setUp()
     {
+        $this->kernel = $this->getMockBuilder('\\Symfony\Component\HttpKernel\Kernel')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $twig = new \Twig_Environment();
         $twig->setLoader(new \Twig_Loader_Filesystem('./Tests/fixtures'));
 
         $twigStrLoader = new \Twig_Loader_String();
         $inliner       = new \InlineStyle\InlineStyle();
 
-        $this->renderer = new Email\Renderer($twig, $twigStrLoader, $inliner);
+        $this->renderer = new Email\Renderer($this->kernel, $twig, $twigStrLoader, $inliner);
     }
 
     public function testSetterGetters()
@@ -38,7 +43,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
      */
     public function testRenderLayoutNotFound()
     {
-        $this->renderer->render('nonlayout.twig', 'template.twig');
+        $this->renderer->render('email.css', 'nonlayout.twig', 'template.twig');
     }
 
     /**
@@ -46,7 +51,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
      */
     public function testRenderTemplateNotFound()
     {
-        $this->renderer->render('layout.twig', 'nontemplate.twig');
+        $this->renderer->render('email.css', 'layout.twig', 'nontemplate.twig');
     }
 
     /**
@@ -54,12 +59,18 @@ class RendererTest extends \PHPUnit_Framework_TestCase
      */
     public function testRenderTemplateDoesNotExtend()
     {
-        $this->renderer->render('layout.twig', 'noextends.twig');
+        $this->renderer->render('email.css', 'layout.twig', 'noextends.twig');
     }
 
     public function testRender()
     {
-        $data = $this->renderer->render('layout.twig', 'template.twig');
+        $this->kernel
+            ->expects($this->any())
+            ->method('locateResource')
+            ->with($this->identicalTo('email.css'))
+            ->will($this->returnValue('./Tests/fixtures/email.css'));
+
+        $data = $this->renderer->render('email.css', 'layout.twig', 'template.twig');
 
         $this->assertEquals('This is da subject', $data['subject'], 'Subject should not have new lines and untrimed space');
     }
