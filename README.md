@@ -5,18 +5,18 @@ Illarra Email Bundle
 
 This bundle let's you create HTML emails with inline styles using Twig as the template language. It's made of two services:
 
-  - Renderer: Updates the given Swift_Message using the given Twig layout/template and css.
+  - Renderer: Updates the given Swift_Message using a Twig layout/template and css.
   - Mailer: It's a wrapper for the default "@mailer" service which let's you use profiles to tell who is sending the email.
 
 ```php
-$message = new Swift_Message::newInstance();
+$message = new \Swift_Message::newInstance();
 
 $this->get('illarra.email.renderer')->updateMessage(
     $message,
     'AcmeEmailBundle:Email:layout.html.twig',
     'AcmeEmailBundle:Email:signup/eu.html.twig',
     [
-        'username' => 'doup',
+        'name' => 'doup',
     ]
 );
 
@@ -32,19 +32,32 @@ Renderer
 $renderer->updateMessage($swift_message, $layout, $template, $data);
 ```
 
-Template requirements:
+This is the minimum a template needs:
 
 ```twig
 {% extends layout %}
+{% block subject %}Welcome {{ name }}!{% endblock %}
+```
 
-{% block subject %}
+In `config.yml`:
 
-{% endblock %}
-
-{% block another_block %}
-
-{% endblock %}
+```yml
+illarra_email:
+  layout_var:  'layout'
+  subject_var: 'subject'
 ```
 
 Mailer
 ------
+
+In `config.yml`:
+
+```yml
+illarra_email:
+  profiles:
+    maritxu:
+      from: ['maritxu@example.com' => 'Maritxu']
+    bartolo:
+      from: ['no-reply@example.com' => 'Unknown']
+      reply_to: ['bartolo@example.com' => 'Bartolo']
+```
