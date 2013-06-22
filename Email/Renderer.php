@@ -86,14 +86,14 @@ class Renderer
 
         // LOAD LAYOUT
         if ($hasExists && !$loader->exists($layout)) {
-            throw new Error\LayoutNotFoundException("Layout '$layout' not found.");
+            throw new Exception\LayoutNotFoundException("Layout '$layout' not found.");
         }
 
         $layout = $this->twig->loadTemplate($layout);
 
         // LOAD TEMPLATE
         if ($hasExists && !$loader->exists($template)) {
-            throw new Error\TemplateNotFoundException("Template '$template' not found.");
+            throw new Exception\TemplateNotFoundException("Template '$template' not found.");
         }
 
         $template = $this->twig->loadTemplate($template);
@@ -101,7 +101,7 @@ class Renderer
         // Twig says this method should not be used
         // https://github.com/fabpot/Twig/blob/v1.13.1/lib/Twig/Template.php#L58
         if ($template->getParent(array_merge($data, [$this->layout => $layout])) === false) {
-            throw new Error\TemplateDoesNotExtendException("Template doesn't extend. Please add: {% extends {$this->layout} %}");   
+            throw new Exception\TemplateDoesNotExtendException("Template doesn't extend. Please add: {% extends {$this->layout} %}");   
         }
 
         // -------

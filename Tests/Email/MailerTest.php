@@ -19,7 +19,7 @@ class MailerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Illarra\EmailBundle\Email\Error\ProfileNotFoundException
+     * @expectedException \Illarra\EmailBundle\Email\Exception\ProfileNotFoundException
      */
     public function testSendProfileNotFoundException()
     {

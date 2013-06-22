@@ -25,7 +25,7 @@ class Mailer
     public function getProfile($profile)
     {
         if (!$this->hasProfile($profile)) {
-            throw new Error\ProfileNotFoundException("Profile '$profile' not found.");
+            throw new Exception\ProfileNotFoundException("Profile '$profile' not found.");
         }
 
         return $this->profiles[$profile];
