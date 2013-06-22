@@ -6,47 +6,83 @@ class Renderer
 {
     protected $inliner;
     protected $twig;
+    protected $twigStrLoader;
 
-    public function __construct(\Twig_Environment $twig, \InlineStyle\InlineStyle $inliner)
+    public function __construct(\Twig_Environment $twig, \Twig_Loader_String $twigStrLoader, \InlineStyle\InlineStyle $inliner)
     {
-        $this->inliner = $inliner;
-        $this->twig    = $twig;
+        $this->inliner       = $inliner;
+        $this->twig          = $twig;
+        $this->twigStrLoader = $twigStrLoader;
+        $this->subject       = "subject";
+        $this->layout        = "layout";
     }
 
-    public function createMessage($layout, $template, $locale, array $data = array())
+    public function updateMessage(\Swift_Message $message, $layout, $template, array $data = array())
     {
-        $render  = $this->render($layout, $template, $locale, $data);
-        $message = \Swift_Message::newInstance();
+        $render = $this->render($layout, $template, $data);
 
         $message
             ->setCharset('utf-8')
-            ->setSubject($render['subject'])
+            ->setSubject($render[$this->subject])
             ->setBody($render['body_plain'], 'text/plain')
             ->addPart($render['body_html'], 'text/html');
 
         return $message;
     }
 
-    public function loadTemplate($template, $locale)
+    /**
+     * Create a Layout to render ONLY the "subject" block, this will be used
+     * as the email subject
+     */
+    protected function getSubjectLayout()
     {
+        $current = $this->twig->getLoader();
+        $this->twig->setLoader($this->twigStrLoader);
 
+        try {
+            $layout = $this->twig->loadTemplate('{% block '. $this->subject .' %}{% endblock %}');
+        } catch (\Exception $e) {
+            $this->twig->setLoader($current);
+
+            throw $e;
+        }
+
+        $this->twig->setLoader($current);
+
+        return $layout;
     }
 
-    public function render($layout, $template, $locale, array $data = array())
+    public function render($layout, $template, array $data = array())
     {
-        // CHECK IF LAYOUT EXISTS
+        $loader    = $this->twig->getLoader();
+        $hasExists = $loader instanceof \Twig_ExistsLoaderInterface;
+
+        // LOAD LAYOUT
+        if ($hasExists && !$loader->exists($layout)) {
+            throw new Error\LayoutNotFound("Layout '$layout' not found.");
+        }
+
         $layout = $this->twig->loadTemplate($layout);
 
-        // CHECK IF TEMPLATE EXISTS
-        $template = $this->loadTemplate($template, $locale);
+        // LOAD TEMPLATE
+        if ($hasExists && !$loader->exists($template)) {
+            throw new Error\TemplateNotFound("Template '$template' not found.");
+        }
+
+        $template = $this->twig->loadTemplate($template);
+
+        // Twig says this method should not be used
+        // https://github.com/fabpot/Twig/blob/v1.13.1/lib/Twig/Template.php#L58
+        if ($template->getParent(array_merge($data, [$this->layout => $layout])) === false) {
+            throw new Error\TemplateDoesNotExtend("Template doesn't extend. Please add: {% extends {$this->layout} %}");   
+        }
 
         // -------
         // SUBJECT
         // -------
-        // Create a Layout to render ONLY the "subject" block, this will be used
-        // as the email subject
-        $subjectLayout = $this->twig->loadTemplate('{% block subject %}{% endblock %}');
-        $subject       = $this->twig->render($template, array_merge($data, ['layout' => $subjectLayout]));
+        // Render & clean subject
+        $subjectLayout = $this->getSubjectLayout();
+        $subject       = $template->render(array_merge($data, [$this->layout => $subjectLayout]));
         $subject       = preg_replace('/\n/',' ', $subject);
         $subject       = preg_replace('!\s+!', ' ', $subject);
         $subject       = trim($subject);
@@ -56,9 +92,9 @@ class Renderer
         // ----
         // Render the "layout", add the layout given by the user
         // and the subject generated before to the data
-        $body = $this->twig->render($template, array_merge($data, [
-            'layout'  => $layout,
-            'subject' => $subject,
+        $body = $template->render(array_merge($data, [
+            $this->layout  => $layout,
+            $this->subject => $subject,
         ]));
 
         // Clean comments <!-- -->
@@ -78,9 +114,9 @@ class Renderer
 
         // Return rendered values
         return [
-            'subject'    => $subject, 
-            'body_html'  => $body,
-            'body_plain' => $this->htmlToPlain($body),
+            $this->subject => $subject, 
+            'body_html'    => $body,
+            'body_plain'   => $this->htmlToPlain($body),
         ];
     }
 
