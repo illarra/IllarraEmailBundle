@@ -20,7 +20,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Illarra\EmailBundle\Email\Error\LayoutNotFound
+     * @expectedException \Illarra\EmailBundle\Email\Error\LayoutNotFoundException
      */
     public function testRenderLayoutNotFound()
     {
@@ -28,7 +28,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Illarra\EmailBundle\Email\Error\TemplateNotFound
+     * @expectedException \Illarra\EmailBundle\Email\Error\TemplateNotFoundException
      */
     public function testRenderTemplateNotFound()
     {
@@ -36,7 +36,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Illarra\EmailBundle\Email\Error\TemplateDoesNotExtend
+     * @expectedException \Illarra\EmailBundle\Email\Error\TemplateDoesNotExtendException
      */
     public function testRenderTemplateDoesNotExtend()
     {
