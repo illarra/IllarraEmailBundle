@@ -13,9 +13,9 @@ $message = new \Swift_Message::newInstance();
 
 $this->get('illarra.email.renderer')->updateMessage(
     $message,
-    '@AcmeEmailBundle/Resources/email.css',
     'AcmeEmailBundle:Email:layout.html.twig',
     'AcmeEmailBundle:Email:signup/eu.html.twig',
+    '@AcmeEmailBundle/Resources/assets/css/email.css',
     [
         'name' => 'doup',
     ]
@@ -30,17 +30,28 @@ Renderer
 --------
 
 ```php
-$renderer->updateMessage($swift_message, $css, $layout, $template, $data);
+$renderer->updateMessage($swift_message, $layout, $template, $css, $data);
 ```
 
-This is the minimum a template needs:
+### Layout & template
+
+Both layout & template need a Twig path. Layout and templates are separated, so that is easier to maintain lot's of 
+templates. 
+
+
+This is the minimum a `$template` needs:
 
 ```twig
 {% extends layout %}
 {% block subject %}Welcome {{ name }}!{% endblock %}
 ```
 
-In `config.yml`:
+Note that layout in the `extends` tag is a variable which corresponds to the 
+`$layout` given in the updateMessage() method. The `subject` block is used to 
+generate the email subject. **Both are required**.
+
+The names of the layout variable and the subject block can be changed in
+`config.yml`:
 
 ```yml
 illarra_email:
@@ -48,10 +59,19 @@ illarra_email:
   subject_var: 'subject'
 ```
 
+### CSS
+
+You can use the `@AcmeBundle/path/my.css` to locate your css. This will be used
+to add inline styles to the generated HTML.
+
 Mailer
 ------
 
-In `config.yml`:
+```php
+$mailer->send($profile, $swift_message);
+```
+
+Profiles are defined in `config.yml`:
 
 ```yml
 illarra_email:
@@ -62,3 +82,8 @@ illarra_email:
       from: { no-reply@example.com: Unknown }
       reply_to: { bartolo@example.com: Bartolo }
 ```
+
+Define the From and ReplyTo options like in a Swift Message: 
+`{'email': 'name'}`. You can define multiple emails in the From parameter, all
+of them will be visible to the addressee, but only the first one will be the 
+actual Sender.
