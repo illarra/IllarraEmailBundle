@@ -17,7 +17,7 @@ $this->get('illarra.email.renderer')->updateMessage(
     'AcmeEmailBundle:Email:signup/eu.html.twig',
     '@AcmeEmailBundle/Resources/assets/css/email.css',
     [
-        'name' => 'doup',
+        'name' => 'Bartolo',
     ]
 );
 
