@@ -19,7 +19,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
         $twig->setLoader(new \Twig_Loader_Filesystem('./Tests/fixtures'));
 
         $twigStrLoader = new \Twig_Loader_String();
-        $inliner       = new \TijsVerkoyen\CssToInlineStyles\CssToInlineStyles();
+        $inliner       = new \InlineStyle\InlineStyle();
 
         $this->renderer = new Email\Renderer($this->kernel, $twig, $twigStrLoader, $inliner);
     }
