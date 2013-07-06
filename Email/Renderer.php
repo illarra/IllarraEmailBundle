@@ -19,7 +19,7 @@ class Renderer
     /**
      *
      */
-    public function __construct(Kernel $kernel, \Twig_Environment $twig, \Twig_Loader_String $twigStrLoader, \InlineStyle\InlineStyle $inliner)
+    public function __construct(Kernel $kernel, \Twig_Environment $twig, \Twig_Loader_String $twigStrLoader, \TijsVerkoyen\CssToInlineStyles\CssToInlineStyles $inliner)
     {
         $this->inliner       = $inliner;
         $this->kernel        = $kernel;
@@ -133,10 +133,10 @@ class Renderer
         // -----------------
         $css = file_get_contents($this->kernel->locateResource($css));
 
-        $this->inliner->loadHTML($body);
-        @$this->inliner->applyStylesheet($css);
+        $this->inliner->setHtml($body);
+        $this->inliner->setCss($css);
 
-        $body = $this->inliner->getHtml();
+        $body = $this->inliner->convert();
 
         // Return rendered values
         return [
