@@ -82,8 +82,8 @@ illarra_email:
 
 ### CSS
 
-You can use the `@AcmeBundle/path/my.css` to locate your css. This will be used
-to add inline styles to the generated HTML.
+You can use the `@AcmeBundle/path/my.css` notation to locate your css. This css file 
+will be used to add inline styles to the generated HTML.
 
 Mailer
 ------
