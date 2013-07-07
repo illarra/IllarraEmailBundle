@@ -172,7 +172,7 @@ class Renderer
         $this->inliner->loadHTML($body);
         @$this->inliner->applyStylesheet($css);
 
-        $body = $this->inliner->getHtml();
+        $body = $this->cleanup($this->inliner->getHtml());
 
         // Return rendered values
         return [
