@@ -35,6 +35,9 @@ class IllarraEmailExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($container->hasParameter('illarra.email_bundle.renderer.force_double_quotes'), 'force_double_quotes parameter');
         $this->assertEquals(false, $container->getParameter('illarra.email_bundle.renderer.force_double_quotes'), 'Default for force_double_quotes');
 
+        $this->assertTrue($container->hasParameter('illarra.email_bundle.renderer.generate_plain'), 'generate_plain parameter');
+        $this->assertEquals(false, $container->getParameter('illarra.email_bundle.renderer.generate_plain'), 'Default for generate_plain');
+
         $this->assertTrue($container->hasParameter('illarra.email_bundle.renderer.layout_var'), 'layout_var parameter');
         $this->assertEquals('layout', $container->getParameter('illarra.email_bundle.renderer.layout_var'), 'Default for layout_var');
 

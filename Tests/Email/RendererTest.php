@@ -24,6 +24,26 @@ class RendererTest extends \PHPUnit_Framework_TestCase
         $this->renderer = new Email\Renderer($this->kernel, $twig, $twigStrLoader, $inliner);
     }
 
+    public function testSetterGetters()
+    {
+        // Default values
+        $this->assertEquals(false, $this->renderer->getForceDoubleQuotes());
+        $this->assertEquals(false, $this->renderer->getGeneratePlain());
+        $this->assertEquals('layout', $this->renderer->getLayoutVar());
+        $this->assertEquals('subject', $this->renderer->getSubjectVar());
+
+        // Change default values
+        $this->renderer->setForceDoubleQuotes(true);
+        $this->renderer->setGeneratePlain(true);
+        $this->renderer->setLayoutVar('da_layout');
+        $this->renderer->setSubjectVar('da_subject');
+
+        $this->assertEquals(true, $this->renderer->getForceDoubleQuotes());
+        $this->assertEquals(true, $this->renderer->getGeneratePlain());
+        $this->assertEquals('da_layout', $this->renderer->getLayoutVar());
+        $this->assertEquals('da_subject', $this->renderer->getSubjectVar());
+    }
+
     public function testCleanup()
     {
         // Default Quotes
@@ -38,20 +58,6 @@ class RendererTest extends \PHPUnit_Framework_TestCase
         $html = $this->renderer->cleanup(file_get_contents('./Tests/fixtures/cleanup_quotes_before.txt'));
         $this->assertEquals(file_get_contents('./Tests/fixtures/cleanup_quotes_after.txt'), $html, "Cleanup single quoted html attributes");
 
-    }
-
-    public function testSetterGetters()
-    {
-        // Default values
-        $this->assertEquals('layout', $this->renderer->getLayoutVar());
-        $this->assertEquals('subject', $this->renderer->getSubjectVar());
-
-        // Change default values
-        $this->renderer->setLayoutVar('da_layout');
-        $this->renderer->setSubjectVar('da_subject');
-
-        $this->assertEquals('da_layout', $this->renderer->getLayoutVar());
-        $this->assertEquals('da_subject', $this->renderer->getSubjectVar());
     }
 
     /**
@@ -89,5 +95,33 @@ class RendererTest extends \PHPUnit_Framework_TestCase
         $data = $this->renderer->render('layout.twig', 'template.twig', 'email.css');
 
         $this->assertEquals('This is da subject', $data['subject'], 'Subject should not have new lines and untrimed space');
+    }
+
+    public function testUpdateMessage()
+    {
+        $this->kernel
+            ->expects($this->any())
+            ->method('locateResource')
+            ->with($this->identicalTo('email.css'))
+            ->will($this->returnValue('./Tests/fixtures/email.css'));
+
+        // Without plain text
+        $message = \Swift_Message::newInstance();
+
+        $this->renderer->setGeneratePlain(false);
+        $this->renderer->updateMessage($message, 'layout.twig', 'template.twig', 'email.css');
+
+        $this->assertEquals('text/html', $message->getContentType());
+        $this->assertCount(0, $message->getChildren());
+
+        // With plain text
+        $message = \Swift_Message::newInstance();
+
+        $this->renderer->setGeneratePlain(true);
+        $this->renderer->updateMessage($message, 'layout.twig', 'template.twig', 'email.css');
+
+        $this->assertEquals('multipart/alternative', $message->getContentType());
+        $this->assertCount(1, $message->getChildren());
+        $this->assertEquals('text/html', $message->getChildren()[0]->getContentType());
     }
 }

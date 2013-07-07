@@ -33,8 +33,11 @@ Configuration
 
 ```yml
 illarra_email:
-  # Force double quotes in html tag attributes, <p style=''> => <p style="">
+  # Force double quotes in HTML tag attributes, <p style=''> => <p style="">
   force_double_quotes: false
+
+  # Generate plain text message from HTML version
+  generate_plain: false
 
   # See "Renderer"
   layout_var:  'layout'

@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Kernel;
 class Renderer
 {
     protected $forceDouble;
+    protected $generatePlain;
     protected $inliner;
     protected $kernel;
     protected $layout;
@@ -23,6 +24,7 @@ class Renderer
     public function __construct(Kernel $kernel, \Twig_Environment $twig, \Twig_Loader_String $twigStrLoader, \InlineStyle\InlineStyle $inliner)
     {
         $this->forceDouble   = false;
+        $this->generatePlain = false;
         $this->inliner       = $inliner;
         $this->kernel        = $kernel;
         $this->twig          = $twig;
@@ -94,6 +96,22 @@ class Renderer
         $this->twig->setLoader($current);
 
         return $layout;
+    }
+
+    /**
+     *
+     */
+    public function getForceDoubleQuotes()
+    {
+        return $this->forceDouble;
+    }
+
+    /**
+     *
+     */
+    public function getGeneratePlain()
+    {
+        return $this->generatePlain;
     }
 
     /**
@@ -174,11 +192,18 @@ class Renderer
 
         $body = $this->cleanup($this->inliner->getHtml());
 
+        // Generate plain message
+        if ($this->generatePlain) {
+            $plain = $this->htmlToPlain($body);
+        } else {
+            $plain = null;
+        }
+
         // Return rendered values
         return [
             $this->subject => $subject, 
             'body_html'    => $body,
-            'body_plain'   => $this->htmlToPlain($body),
+            'body_plain'   => $plain,
         ];
     }
 
@@ -188,6 +213,16 @@ class Renderer
     public function setForceDoubleQuotes($forceDouble)
     {
         $this->forceDouble = $forceDouble;
+
+        return $this;
+    }
+
+    /**
+     *
+     */
+    public function setGeneratePlain($generatePlain)
+    {
+        $this->generatePlain = $generatePlain;
 
         return $this;
     }
@@ -222,8 +257,16 @@ class Renderer
         $message
             ->setCharset('utf-8')
             ->setSubject($render[$this->subject])
-            ->setBody($render['body_plain'], 'text/plain')
-            ->addPart($render['body_html'], 'text/html');
+        ;
+
+        if (!is_null($render['body_plain'])) {
+            $message
+                ->setBody($render['body_plain'], 'text/plain')
+                ->addPart($render['body_html'], 'text/html')
+            ;
+        } else {
+            $message->setBody($render['body_html'], 'text/html');
+        }
 
         return $message;
     }

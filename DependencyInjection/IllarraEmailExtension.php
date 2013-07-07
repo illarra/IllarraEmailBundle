@@ -24,6 +24,7 @@ class IllarraEmailExtension extends Extension
 
         $container->setParameter('illarra.email_bundle.mailer.profiles', $config['profiles']);
         $container->setParameter('illarra.email_bundle.renderer.force_double_quotes', $config['force_double_quotes']);
+        $container->setParameter('illarra.email_bundle.renderer.generate_plain', $config['generate_plain']);
         $container->setParameter('illarra.email_bundle.renderer.layout_var', $config['layout_var']);
         $container->setParameter('illarra.email_bundle.renderer.subject_var', $config['subject_var']);
 
