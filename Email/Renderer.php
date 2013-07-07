@@ -9,6 +9,7 @@ use Symfony\Component\HttpKernel\Kernel;
  */
 class Renderer
 {
+    protected $forceDouble;
     protected $inliner;
     protected $kernel;
     protected $layout;
@@ -21,6 +22,7 @@ class Renderer
      */
     public function __construct(Kernel $kernel, \Twig_Environment $twig, \Twig_Loader_String $twigStrLoader, \InlineStyle\InlineStyle $inliner)
     {
+        $this->forceDouble   = false;
         $this->inliner       = $inliner;
         $this->kernel        = $kernel;
         $this->twig          = $twig;
@@ -28,6 +30,40 @@ class Renderer
 
         $this->layout  = "layout";
         $this->subject = "subject";
+    }
+
+    /**
+     *
+     */
+    public function cleanup($html)
+    {
+        // remove style for: head, title, meta 
+        // ...
+
+        // endtag /> for: br + img
+        // ...
+
+        // style='' => style=""
+        if ($this->forceDouble) {
+            // Search html tags: <*>
+            $html = preg_replace_callback("/<([^\/].*?)>/sm", function ($matches) {
+                // Search ='*'
+                $replace = preg_replace_callback("/='([^']*?)'/sm", function ($matches) {
+                    $out = str_replace("'", '__QUOTE__', $matches[0]);
+                    $out = str_replace('"', "'", $out);
+                    return str_replace('__QUOTE__', '"', $out);
+                }, $matches[1]);
+
+                // If tag doesn't have attritubes return match as is
+                if (empty($replace)) {
+                    return $matches[0];
+                }
+
+                return str_replace($matches[1], $replace, $matches[0]);
+            }, $html);
+        }
+
+        return $html;
     }
 
     /**
@@ -144,6 +180,16 @@ class Renderer
             'body_html'    => $body,
             'body_plain'   => $this->htmlToPlain($body),
         ];
+    }
+
+    /**
+     *
+     */
+    public function setForceDoubleQuotes($forceDouble)
+    {
+        $this->forceDouble = $forceDouble;
+
+        return $this;
     }
 
     /**

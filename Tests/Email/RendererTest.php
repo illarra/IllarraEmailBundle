@@ -24,6 +24,22 @@ class RendererTest extends \PHPUnit_Framework_TestCase
         $this->renderer = new Email\Renderer($this->kernel, $twig, $twigStrLoader, $inliner);
     }
 
+    public function testCleanup()
+    {
+        // Default Quotes
+        $this->renderer->setForceDoubleQuotes(false);
+
+        $html = $this->renderer->cleanup(file_get_contents('./Tests/fixtures/cleanup_quotes_before.txt'));
+        $this->assertEquals(file_get_contents('./Tests/fixtures/cleanup_quotes_before.txt'), $html, "Don't cleanup anything");
+
+        // Force Double Quotes
+        $this->renderer->setForceDoubleQuotes(true);
+
+        $html = $this->renderer->cleanup(file_get_contents('./Tests/fixtures/cleanup_quotes_before.txt'));
+        $this->assertEquals(file_get_contents('./Tests/fixtures/cleanup_quotes_after.txt'), $html, "Cleanup single quoted html attributes");
+
+    }
+
     public function testSetterGetters()
     {
         // Default values

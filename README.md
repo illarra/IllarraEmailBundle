@@ -26,6 +26,24 @@ $message->setTo(['bartolo@example.com' => 'Bartolo']);
 $this->get('illarra.email.mailer')->send('maritxu', $message);
 ```
 
+Configuration
+-------------
+
+`config.yml`:
+
+```yml
+illarra_email:
+  # Force double quotes in html tag attributes, <p style=''> => <p style="">
+  force_double_quotes: false
+
+  # See "Renderer"
+  layout_var:  'layout'
+  subject_var: 'subject'
+
+  # See "Mailer"
+  profiles: ~
+```
+
 Renderer
 --------
 

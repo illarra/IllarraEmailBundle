@@ -22,6 +22,10 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->booleanNode('force_double_quotes')
+                    ->defaultFalse()
+                    ->info('Force double quotes for html tag attributes')
+                ->end()
                 ->scalarNode('layout_var')
                     ->defaultValue('layout')
                     ->info('Name of the variable used in the twig extends tag')

@@ -13,6 +13,7 @@ services:
         class: "%illarra.email_bundle.renderer.class%"
         arguments: ["@kernel", "@twig", "@illarra.email.renderer.twig_loader_string", "@illarra.email.renderer.inline_style"]
         calls:
+            - ["setForceDoubleQuotes", ["%illarra.email_bundle.renderer.force_double_quotes%"]]
             - ["setLayoutVar", ["%illarra.email_bundle.renderer.layout_var%"]]
             - ["setSubjectVar", ["%illarra.email_bundle.renderer.subject_var%"]]
 

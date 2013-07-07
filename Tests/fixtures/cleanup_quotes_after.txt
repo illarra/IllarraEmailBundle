@@ -1,0 +1,13 @@
+<html>
+<body>
+<p style="
+    font-family:'Helvetica';
+    background-image:url('http://www.google.com/google.jpg');
+"
+class="multiple"
+>
+I'm a single quote.
+I'm a "double" one.
+</p>
+</body>
+</html>
