@@ -9,7 +9,7 @@ This bundle let's you create HTML emails with inline styles using Twig as the te
   - Mailer: It's a wrapper for the default "@mailer" service which let's you use profiles to tell who is sending the email.
 
 ```php
-$message = new \Swift_Message::newInstance();
+$message = \Swift_Message::newInstance();
 
 $this->get('illarra.email.renderer')->updateMessage(
     $message,
