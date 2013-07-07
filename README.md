@@ -34,6 +34,7 @@ Configuration
 ```yml
 illarra_email:
   # Force double quotes in HTML tag attributes, <p style=''> => <p style="">
+  # This is usefull for Mandrill or other service which needs double quote attributes
   force_double_quotes: false
 
   # Generate plain text message from HTML version
